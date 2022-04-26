@@ -1,0 +1,12 @@
+.button {
+  border: none;
+  color: white;
+  background: transparent;
+  cursor: pointer;
+  padding: 0 10px;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.8;
+  }
+}

@@ -1,0 +1,60 @@
+.select-box {
+  &:after {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #999999;
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    content: "";
+    z-index: 98;
+  }
+
+  .selected {
+    height: 19px;
+    padding: 0 10px;
+    cursor: pointer;
+  }
+
+  .list {
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    top: 100%;
+
+    &-nested:not(.visible) {
+      visibility: hidden;
+      height: 0;
+      transition: all .1s;
+    }
+
+    ul {
+      padding: 0;
+      margin: 0;
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      width: 100%;
+
+      .list-nested li {
+        padding-left: 20px;
+        color: #46a2e5;
+      }
+
+      li {
+        list-style: none;
+        border-bottom: 1px solid #999999;
+        padding: 10px;
+        cursor: pointer;
+        transition: all .1s;
+
+        &:hover {
+          background: #999999;
+          color: white;
+        }
+      }
+    }
+  }
+}
