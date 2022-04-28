@@ -4,17 +4,17 @@
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #999999;
+    border-top: 6px solid #e5e5e5;
     position: absolute;
     top: 50%;
-    right: 5px;
+    right: 15px;
     content: "";
     z-index: 98;
   }
 
   .selected {
     height: 19px;
-    padding: 0 10px;
+    padding: 0 20px 0 10px;
     cursor: pointer;
   }
 
@@ -27,7 +27,6 @@
     &-nested:not(.visible) {
       visibility: hidden;
       height: 0;
-      transition: all .1s;
     }
 
     ul {
@@ -45,14 +44,13 @@
 
       li {
         list-style: none;
-        border-bottom: 1px solid #999999;
+        border-bottom: 1px solid #e5e5e5;
         padding: 10px;
         cursor: pointer;
-        transition: all .1s;
 
-        &:hover {
-          background: #999999;
-          color: white;
+        &:hover, &.opened {
+          background: #e5e5e5;
+          color: #999999;
         }
       }
     }

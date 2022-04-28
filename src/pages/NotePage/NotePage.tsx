@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {ChangeEvent, useState} from "react"
 import {Title} from "../../components/Title/Title";
 import {Header} from "../../components/Header/Header";
 import {ReactComponent as ArrowBack} from '../../assets/svg/left-arrow.svg';
@@ -37,6 +37,24 @@ export const NotePage: React.FC = () => {
         }))
     }
 
+    const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        setNote(prevState => ({
+            ...prevState,
+            [event.target.name]: event.target.type === 'checkbox' ? event.target.checked : event.target.value,
+        }))
+    };
+
+    const editorHandler = (text: string) => {
+        setNote(prevState => ({
+            ...prevState,
+            details: text,
+        }))
+    };
+
+    const reset = () => {
+        setNote(initialState);
+    }
+
     return (
         <>
             <Header>
@@ -44,24 +62,33 @@ export const NotePage: React.FC = () => {
                     <ArrowBack className='arrow-back'/>
                 </Button>
                 <div>
-                    <Button>RENSA</Button>
+                    <Button onClick={reset}>RENSA</Button>
                     <Button>SPARA</Button>
                 </div>
             </Header>
             <div className='container'>
-                <Title title='Skriv social dokumentation'/>
+                <Title
+                    title='Skriv social dokumentation'
+                />
 
                 <form className='form-body'>
-                    <TextInput maxLength={200} label='Sammanfatta handelsen' value={note.title}/>
+                    <TextInput
+                        maxLength={200}
+                        label='Sammanfatta handelsen'
+                        value={note.title}
+                        onChange={changeHandler}
+                        name='title'
+                    />
                     <TextInput
                         maxLength={1500}
                         label='Detaljer'
                         showCount={true}
                         infoLabel='Journal: Social dokumentation'
-                        textareaMode={true}
                         height={300}
                         value={note.details}
                         enableEditor={true}
+                        name='details'
+                        editorChange={editorHandler}
                     />
                     <div className='form-field'>
                         <div className='input-container input-container_disable-focus'>
@@ -87,14 +114,23 @@ export const NotePage: React.FC = () => {
                         values={CLIENT_DROPDOWN}
                         infoLabel='Valji forst enhet'
                         value={note.client}
+                        onChange={changeHandler}
+                        name='client'
                     />
                     <SelectBox
                         label='Nyckelord'
                         values={NYCKELORD_DROPDOWN}
                         value={note.keyword}
+                        onChange={changeHandler}
+                        name='keyword'
                     />
                     <div className='form-field'>
-                        <CheckBox label='Baktadera' checked={note.backdate}/>
+                        <CheckBox
+                            label='Baktadera'
+                            checked={note.backdate}
+                            name='backdate'
+                            onChange={changeHandler}
+                        />
                     </div>
                 </form>
             </div>

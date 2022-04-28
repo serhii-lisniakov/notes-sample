@@ -1,24 +1,19 @@
-import React, {InputHTMLAttributes, useState} from 'react';
+import React, {InputHTMLAttributes} from 'react';
 import './styles.scss';
 
 type Props = {
     label: string;
 }
 
-export const CheckBox: React.FC<Props & InputHTMLAttributes<any>> = ({label, checked}) => {
-    const [value, setValue] = useState(checked);
-
-    const changeHandler = (event: any) => {
-        setValue(event.target.checked)
-    };
-
+export const CheckBox: React.FC<Props & InputHTMLAttributes<any>> = (props) => {
     return (
         <label className="checkbox-container">
-            {label}
+            {props.label}
             <input
                 type="checkbox"
-                checked={value}
-                onChange={changeHandler}
+                checked={props.checked}
+                onChange={props.onChange}
+                name={props.name}
             />
             <span className="checkbox-label"/>
         </label>

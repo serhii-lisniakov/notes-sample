@@ -1,4 +1,4 @@
-import React, {SelectHTMLAttributes, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, InputHTMLAttributes, RefObject, useEffect, useRef, useState} from 'react';
 import './styles.scss';
 
 type DropDownItem = {
@@ -14,15 +14,16 @@ type Props = {
     showCount?: boolean;
 }
 
-export const SelectBox: React.FC<Props & SelectHTMLAttributes<any>> = (props) => {
-    const [value, setValue] = useState(props.value);
+export const SelectBox: React.FC<Props & InputHTMLAttributes<any>> = (props) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const ref = useRef<any>(null);
+    const itemsRefs: { [key: string]: RefObject<HTMLLIElement> } = {};
+    let inputRef: HTMLInputElement | null;
 
     useEffect(() => {
-        document.addEventListener("click", handleClickOutside, true);
+        document.addEventListener("click", handleClickOutside);
         return () => {
-            document.removeEventListener("click", handleClickOutside, true);
+            document.removeEventListener("click", handleClickOutside);
         };
     });
 
@@ -32,23 +33,30 @@ export const SelectBox: React.FC<Props & SelectHTMLAttributes<any>> = (props) =>
         }
     };
 
-    const toggling = () => setIsOpen(!isOpen);
-
-    const onOptionClicked = (value: string) => () => {
-        setValue(value);
+    const onOptionClicked = (value: string) => {
+        inputRef && (inputRef.value = value);
+        props.onChange && props.onChange({target: inputRef} as ChangeEvent<HTMLInputElement>)
         setIsOpen(false);
     };
 
     const toggleNested = (e: any) => {
-        const listClassList = e.target.nextElementSibling.classList;
-        const className = 'visible';
-        listClassList.contains(className) ? listClassList.remove(className) : listClassList.add(className);
+        for (let key in itemsRefs) {
+            itemsRefs[key].current?.classList.remove('opened');
+            itemsRefs[key].current?.nextElementSibling?.classList.remove('visible');
+        }
+        e.target.classList.add('opened');
+        e.target.nextElementSibling.classList.add('visible');
     }
 
-    const renderItem = (option: DropDownItem, idx: number) => (
-        <li onClick={onOptionClicked(option.value)} key={option.id || idx}>
-            {option.value}
-        </li>
+    const getOrCreateRef = (value: string) => {
+        if (!itemsRefs.hasOwnProperty(value)) {
+            itemsRefs[value] = React.createRef();
+        }
+        return itemsRefs[value];
+    }
+
+    const renderItem = ({value}: DropDownItem, key: string) => (
+        <li onClick={() => onOptionClicked(value)} value={value} key={key}>{value}</li>
     )
 
     return (
@@ -56,24 +64,37 @@ export const SelectBox: React.FC<Props & SelectHTMLAttributes<any>> = (props) =>
             <div className='input-container'>
                 <label className='label-main'>{props.label}</label>
                 <div className='select-box' ref={ref}>
-                    <div className='selected' onClick={toggling}>{value}</div>
+                    <input
+                        className='selected'
+                        value={props.value}
+                        ref={(input) => {
+                            inputRef = input
+                        }}
+                        onClick={() => setIsOpen(!isOpen)}
+                        onChange={props.onChange}
+                        readOnly
+                        name={props.name}
+                    />
                     {isOpen && (
                         <div className='list'>
                             <ul>
                                 {props.values.map((option, idx) => (
                                     option.children?.length ?
-                                        <>
-                                            <li onClick={e => toggleNested(e)}>
+                                        <React.Fragment key={idx}>
+                                            <li
+                                                onClick={e => toggleNested(e)}
+                                                ref={getOrCreateRef(option.value)}
+                                            >
                                                 {option.value}
                                             </li>
                                             <div className='list-nested'>
                                                 {option.children.map((child, index) => (
-                                                    renderItem(child, index)
+                                                    renderItem(child, 'nestedLi' + index)
                                                 ))}
                                             </div>
-                                        </>
+                                        </React.Fragment>
                                         :
-                                        renderItem(option, idx)
+                                        renderItem(option, 'li' + idx)
                                 ))}
                             </ul>
                         </div>
